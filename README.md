@@ -5,6 +5,8 @@
 This API classifies a given name by gender using the Genderize.io API. It processes the response and applies additional business logic to determine confidence levels.
 
 ---
+## 🚀 Base URL
+https://genderize-api-production.up.railway.app
 
 ## 📍 Endpoint
 
