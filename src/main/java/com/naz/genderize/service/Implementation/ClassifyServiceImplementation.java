@@ -12,8 +12,13 @@ import java.time.Instant;
 
 @Service
 public class ClassifyServiceImplementation implements ClassifyService {
-    private final RestTemplate restTemplate = new RestTemplate();
+    private final RestTemplate restTemplate;
     private final String genderizeUrl = "https://api.genderize.io";
+
+    public ClassifyServiceImplementation(RestTemplate restTemplate) {
+        this.restTemplate = restTemplate;
+    }
+
     public ResponseEntity<ApiResponse> classify(String name){
         if(name == null || name.trim().isEmpty()){
             return ResponseEntity
