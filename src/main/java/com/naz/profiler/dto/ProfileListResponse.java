@@ -5,9 +5,9 @@ import java.util.List;
 public record ProfileListResponse(
         String status,
         Integer count,
-        List<ProfileList> list
+        List<ProfileList> profiles
 ) implements ApiResponse {
-    public ProfileListResponse(Integer count, List<ProfileList> list){
-        this("success",count, list);
+    public ProfileListResponse(Integer count, List<ProfileList> profiles){
+        this("success",count, profiles);
     }
 }
