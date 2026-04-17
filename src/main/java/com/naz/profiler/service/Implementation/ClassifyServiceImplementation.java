@@ -1,22 +1,20 @@
-package com.naz.genderize.service.Implementation;
+package com.naz.profiler.service.Implementation;
 
-import com.naz.genderize.dto.*;
-import com.naz.genderize.service.ClassifyService;
+import com.naz.profiler.dto.*;
+import com.naz.profiler.provider.ExternalService;
+import com.naz.profiler.service.ClassifyService;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.stereotype.Service;
-import org.springframework.web.client.RestTemplate;
-import org.springframework.web.util.UriComponentsBuilder;
 
 import java.time.Instant;
 
 @Service
 public class ClassifyServiceImplementation implements ClassifyService {
-    private final RestTemplate restTemplate;
-    private final String genderizeUrl = "https://api.genderize.io";
+    private final ExternalService externalService;
 
-    public ClassifyServiceImplementation(RestTemplate restTemplate) {
-        this.restTemplate = restTemplate;
+    public ClassifyServiceImplementation(ExternalService externalService) {
+        this.externalService = externalService;
     }
 
     public ResponseEntity<ApiResponse> classify(String name){
@@ -32,21 +30,7 @@ public class ClassifyServiceImplementation implements ClassifyService {
         }
 
 
-        GenderizeResponse response;
-        try{
-            response = restTemplate.getForObject(
-                    UriComponentsBuilder
-                            .fromUriString(genderizeUrl)
-                            .queryParam("name", name)
-                            .toUriString(),
-                    GenderizeResponse.class
-            );
-        } catch (Exception e){
-            return ResponseEntity
-                    .status(HttpStatus.BAD_GATEWAY)
-                    .body(new ErrorResponse("External API error"));
-        }
-
+        GenderizeResponse response = (GenderizeResponse) externalService.callGenderize(name);
         if(response == null ||
                 response.getGender() == null ||
                 response.getCount() == null ||

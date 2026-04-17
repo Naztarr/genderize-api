@@ -1,7 +1,6 @@
-package com.naz.genderize.service;
+package com.naz.profiler.service;
 
-import com.naz.genderize.dto.ApiResponse;
-import com.naz.genderize.dto.SuccessResponse;
+import com.naz.profiler.dto.ApiResponse;
 import org.springframework.http.ResponseEntity;
 
 public interface ClassifyService {

@@ -1,4 +1,4 @@
-package com.naz.genderize.dto;
+package com.naz.profiler.dto;
 
 import com.fasterxml.jackson.annotation.JsonProperty;
 

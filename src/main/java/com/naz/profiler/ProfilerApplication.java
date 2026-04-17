@@ -1,13 +1,13 @@
-package com.naz.genderize;
+package com.naz.profiler;
 
 import org.springframework.boot.SpringApplication;
 import org.springframework.boot.autoconfigure.SpringBootApplication;
 
 @SpringBootApplication
-public class GenderizeApplication {
+public class ProfilerApplication {
 
 	public static void main(String[] args) {
-		SpringApplication.run(GenderizeApplication.class, args);
+		SpringApplication.run(ProfilerApplication.class, args);
 	}
 
 }

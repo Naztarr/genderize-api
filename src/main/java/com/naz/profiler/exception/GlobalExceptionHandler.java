@@ -1,7 +1,7 @@
-package com.naz.genderize.exception;
+package com.naz.profiler.exception;
 
-import com.naz.genderize.dto.ApiResponse;
-import com.naz.genderize.dto.ErrorResponse;
+import com.naz.profiler.dto.ApiResponse;
+import com.naz.profiler.dto.ErrorResponse;
 import org.springframework.http.HttpHeaders;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.HttpStatusCode;

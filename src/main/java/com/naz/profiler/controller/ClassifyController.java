@@ -1,7 +1,7 @@
-package com.naz.genderize.controller;
+package com.naz.profiler.controller;
 
-import com.naz.genderize.dto.ApiResponse;
-import com.naz.genderize.service.ClassifyService;
+import com.naz.profiler.dto.ApiResponse;
+import com.naz.profiler.service.ClassifyService;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
 

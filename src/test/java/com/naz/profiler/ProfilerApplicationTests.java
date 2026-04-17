@@ -1,10 +1,10 @@
-package com.naz.genderize;
+package com.naz.profiler;
 
 import org.junit.jupiter.api.Test;
 import org.springframework.boot.test.context.SpringBootTest;
 
 @SpringBootTest
-class GenderizeApplicationTests {
+class ProfilerApplicationTests {
 
 	@Test
 	void contextLoads() {

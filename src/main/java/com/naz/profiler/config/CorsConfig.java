@@ -1,4 +1,4 @@
-package com.naz.genderize.config;
+package com.naz.profiler.config;
 
 import org.springframework.context.annotation.Configuration;
 import org.springframework.web.servlet.config.annotation.CorsRegistry;
