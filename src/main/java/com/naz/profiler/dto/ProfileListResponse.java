@@ -11,6 +11,6 @@ public record ProfileListResponse(
         List<ProfileList> profile
 ) implements ApiResponse {
     public ProfileListResponse(Integer count, List<ProfileList> profile){
-        this("success",count, profil);
+        this("success",count, profile);
     }
 }
