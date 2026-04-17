@@ -32,7 +32,7 @@ public class ProfileServiceImpl implements ProfileService {
         Optional<Profile> existing = repository.findByNameIgnoreCase(request.name());
         if (existing.isPresent()) {
             return ResponseEntity.ok(
-                    new ProfileSuccessResp(mapToResponse(existing.get()))
+                    new IdempotencyResponse(mapToResponse(existing.get()))
             );
         }
 
