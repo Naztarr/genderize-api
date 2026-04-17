@@ -1,18 +1,31 @@
-# Gender Classification API
+# Profile Intelligence Service
 
 ## 📌 Overview
 
-This API classifies a given name by gender using the Genderize.io API. It processes the response and applies additional business logic to determine confidence levels.
+This service accepts a name, enriches the profile using multiple external APIs, stores the processed result in a database, and provides endpoints for retrieval, filtering, and deletion.
 
 ---
 ## 🚀 Base URL
 https://genderize-api-production.up.railway.app
 
-## 📍 Endpoint
+## 📍 Endpoints
 
 ```
 GET /api/classify?name=<name>
 ```
+```
+POST /api/profiles
+```
+```
+GET /api/profiles
+```
+```
+GET /api/profiles/{id}
+```
+```
+DELETE /api/profiles/{id}
+```
+
 
 ---
 
@@ -21,13 +34,28 @@ GET /api/classify?name=<name>
 ```json
 {
   "status": "success",
+
   "data": {
-    "name": "john",
-    "gender": "male",
-    "probability": 0.99,
+
+    "id": "b3f9c1e2-7d4a-4c91-9c2a-1f0a8e5b6d12",
+
+    "name": "ella",
+
+    "gender": "female",
+
+    "gender_probability": 0.99,
+
     "sample_size": 1234,
-    "is_confident": true,
-    "processed_at": "2026-04-01T12:00:00Z"
+
+    "age": 46,
+
+    "age_group": "adult",
+
+    "country_id": "DRC",
+
+    "country_probability": 0.85,
+
+    "created_at": "2026-04-01T12:00:00Z"
   }
 }
 ```
@@ -67,8 +95,8 @@ GET /api/classify?name=<name>
 
 ```json
 {
-  "status": "error",
-  "message": "External API error"
+  "status": "502", 
+  "message": "${externalApi} returned an invalid response"
 }
 ```
 
@@ -77,7 +105,7 @@ GET /api/classify?name=<name>
 ## ⚙️ Features
 
 * Input validation
-* External API integration
+* External API integration: genderize, agify and nationalize
 * Confidence scoring logic
 * ISO 8601 timestamp generation
 * Proper HTTP status handling
