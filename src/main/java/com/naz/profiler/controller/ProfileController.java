@@ -29,8 +29,8 @@ public class ProfileController {
     @GetMapping
     public ResponseEntity<ApiResponse> getAll(
             @RequestParam(required = false) String gender,
-            @RequestParam(required = false) String countryId,
-            @RequestParam(required = false) String ageGroup
+            @RequestParam(name = "country_id",required = false) String countryId,
+            @RequestParam(name = "age_group",required = false) String ageGroup
     ) {
         return service.getProfiles(gender, countryId, ageGroup);
     }
