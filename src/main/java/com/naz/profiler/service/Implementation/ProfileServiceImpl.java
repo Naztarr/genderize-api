@@ -38,8 +38,11 @@ public class ProfileServiceImpl implements ProfileService {
 
 
         GenderizeResponse gender = (GenderizeResponse) externalService.callGenderize(request.name());
+        System.out.println(gender.getGender());
         AgifyResponse age = (AgifyResponse) externalService.callAgify(request.name());
+        System.out.println(age.getAge());
         NationalizeResponse nationality = (NationalizeResponse) externalService.callNationalize(request.name());
+        System.out.println(nationality.getCountry());
 
 
         if (gender.getGender() == null || gender.getCount() == 0) {
@@ -122,11 +125,11 @@ public class ProfileServiceImpl implements ProfileService {
         }
         if(countryId != null && !countryId.isBlank()){
             stream = stream.filter(p ->
-                    p.getCountryId() != null && p.getCountryId().equalsIgnoreCase(gender));
+                    p.getCountryId() != null && p.getCountryId().equalsIgnoreCase(countryId));
         }
         if(ageGroup != null && !ageGroup.isBlank()){
             stream = stream.filter(p ->
-                    p.getAgeGroup() != null && p.getAgeGroup().equalsIgnoreCase(gender));
+                    p.getAgeGroup() != null && p.getAgeGroup().equalsIgnoreCase(ageGroup));
         }
 
         List<ProfileList> list = stream.map(

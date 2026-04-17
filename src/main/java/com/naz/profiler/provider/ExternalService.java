@@ -62,7 +62,7 @@ public class ExternalService {
         try{
             response = restTemplate.getForObject(
                     UriComponentsBuilder
-                            .fromUriString(genderizeUrl)
+                            .fromUriString(nationalizeUrl)
                             .queryParam("name", name)
                             .toUriString(),
                     NationalizeResponse.class
