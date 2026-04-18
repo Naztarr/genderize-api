@@ -116,22 +116,7 @@ public class ProfileServiceImpl implements ProfileService {
 
     @Override
     public ResponseEntity<ApiResponse> getProfiles(String gender, String countryId, String ageGroup) {
-//        List<Profile> allProfiles = repository.findAll();
-//        Stream<Profile> stream = allProfiles.stream();
-//
-//        if(gender != null && !gender.isBlank()){
-//            stream = stream.filter(p ->
-//                    p.getGender() != null && p.getGender().trim().equalsIgnoreCase(gender));
-//        }
-//        if(countryId != null && !countryId.isBlank()){
-//            stream = stream.filter(p ->
-//                    p.getCountryId() != null && p.getCountryId().trim().equalsIgnoreCase(countryId));
-//        }
-//        if(ageGroup != null && !ageGroup.isBlank()){
-//            stream = stream.filter(p ->
-//                    p.getAgeGroup() != null && p.getAgeGroup().trim().equalsIgnoreCase(ageGroup));
-//        }
-        // Start with a 'conjunction' (a rule that is always true)
+
         Specification<Profile> spec = (root, query, cb) -> cb.conjunction();
 
         if (gender != null && !gender.isBlank()) {
