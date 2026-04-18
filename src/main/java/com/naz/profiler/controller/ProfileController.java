@@ -3,7 +3,6 @@ package com.naz.profiler.controller;
 import com.naz.profiler.dto.ApiResponse;
 import com.naz.profiler.dto.ProfileRequest;
 import com.naz.profiler.service.ProfileService;
-import lombok.RequiredArgsConstructor;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
 
@@ -11,7 +10,6 @@ import java.util.UUID;
 
 @RestController
 @RequestMapping("api/profiles")
-@CrossOrigin(origins = "*")
 public class ProfileController {
 
     public final ProfileService service;
