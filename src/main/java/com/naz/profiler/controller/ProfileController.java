@@ -11,10 +11,14 @@ import java.util.UUID;
 
 @RestController
 @RequestMapping("api/profiles")
-@RequiredArgsConstructor
+@CrossOrigin(origins = "*")
 public class ProfileController {
 
     public final ProfileService service;
+
+    public ProfileController(ProfileService service) {
+        this.service = service;
+    }
 
     @PostMapping
     public ResponseEntity<ApiResponse> create(@RequestBody ProfileRequest request) {
