@@ -34,7 +34,7 @@ public class ExternalService {
         } catch (Exception e){
             return ResponseEntity
                     .status(HttpStatus.BAD_GATEWAY)
-                    .body(new ErrorResponse("External API error"));
+                    .body(new ErrorResponse("Genderize returned an invalid response"));
         }
         return response;
     }
@@ -52,7 +52,7 @@ public class ExternalService {
         } catch (Exception e){
             return ResponseEntity
                     .status(HttpStatus.BAD_GATEWAY)
-                    .body(new ErrorResponse("External API error"));
+                    .body(new ErrorResponse("Agify returned an invalid response"));
         }
         return response;
     }
@@ -70,7 +70,7 @@ public class ExternalService {
         } catch (Exception e){
             return ResponseEntity
                     .status(HttpStatus.BAD_GATEWAY)
-                    .body(new ErrorResponse("External API error"));
+                    .body(new ErrorResponse("Nationalize returned an invalid response"));
         }
         return response;
     }

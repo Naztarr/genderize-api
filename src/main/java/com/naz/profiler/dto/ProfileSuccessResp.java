@@ -1,6 +1,5 @@
 package com.naz.profiler.dto;
 
-import com.fasterxml.jackson.annotation.JsonProperty;
 
 public record ProfileSuccessResp(String status,
                                  ProfileResponseData data) implements ApiResponse     {

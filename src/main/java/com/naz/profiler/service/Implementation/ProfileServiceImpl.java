@@ -6,6 +6,7 @@ import com.naz.profiler.provider.ExternalService;
 import com.naz.profiler.repository.ProfileRepository;
 import com.naz.profiler.service.ProfileService;
 import lombok.RequiredArgsConstructor;
+import org.springframework.data.jpa.domain.Specification;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.stereotype.Service;
@@ -14,7 +15,6 @@ import java.util.Comparator;
 import java.util.List;
 import java.util.Optional;
 import java.util.UUID;
-import java.util.stream.Stream;
 
 @Service
 @RequiredArgsConstructor
@@ -116,23 +116,43 @@ public class ProfileServiceImpl implements ProfileService {
 
     @Override
     public ResponseEntity<ApiResponse> getProfiles(String gender, String countryId, String ageGroup) {
-        List<Profile> allProfiles = repository.findAll();
-        Stream<Profile> stream = allProfiles.stream();
+//        List<Profile> allProfiles = repository.findAll();
+//        Stream<Profile> stream = allProfiles.stream();
+//
+//        if(gender != null && !gender.isBlank()){
+//            stream = stream.filter(p ->
+//                    p.getGender() != null && p.getGender().trim().equalsIgnoreCase(gender));
+//        }
+//        if(countryId != null && !countryId.isBlank()){
+//            stream = stream.filter(p ->
+//                    p.getCountryId() != null && p.getCountryId().trim().equalsIgnoreCase(countryId));
+//        }
+//        if(ageGroup != null && !ageGroup.isBlank()){
+//            stream = stream.filter(p ->
+//                    p.getAgeGroup() != null && p.getAgeGroup().trim().equalsIgnoreCase(ageGroup));
+//        }
+        // Start with a 'conjunction' (a rule that is always true)
+        Specification<Profile> spec = (root, query, cb) -> cb.conjunction();
 
-        if(gender != null && !gender.isBlank()){
-            stream = stream.filter(p ->
-                    p.getGender() != null && p.getGender().equalsIgnoreCase(gender));
-        }
-        if(countryId != null && !countryId.isBlank()){
-            stream = stream.filter(p ->
-                    p.getCountryId() != null && p.getCountryId().equalsIgnoreCase(countryId));
-        }
-        if(ageGroup != null && !ageGroup.isBlank()){
-            stream = stream.filter(p ->
-                    p.getAgeGroup() != null && p.getAgeGroup().equalsIgnoreCase(ageGroup));
+        if (gender != null && !gender.isBlank()) {
+            spec = spec.and((root, query, cb) ->
+                    cb.equal(cb.lower(root.get("gender")), gender.toLowerCase().trim()));
         }
 
-        List<ProfileList> list = stream.map(
+        if (countryId != null && !countryId.isBlank()) {
+            spec = spec.and((root, query, cb) ->
+                    cb.equal(cb.lower(root.get("countryId")), countryId.toLowerCase().trim()));
+        }
+
+        if (ageGroup != null && !ageGroup.isBlank()) {
+            spec = spec.and((root, query, cb) ->
+                    cb.equal(cb.lower(root.get("ageGroup")), ageGroup.toLowerCase().trim()));
+        }
+
+        // 2. Fetch from DB using the Spec
+        List<Profile> filteredProfiles = repository.findAll(spec);
+
+        List<ProfileList> list = filteredProfiles.stream().map(
                 p -> new ProfileList(p.getId(), p.getName(),
                             p.getGender(), p.getAge(),
                             p.getAgeGroup(), p.getCountryId())
