@@ -1,12 +1,12 @@
 package com.naz.profiler.controller;
 
 import com.naz.profiler.dto.ApiResponse;
-import com.naz.profiler.dto.ProfileRequest;
+import com.naz.profiler.dto.ProfileFilterRequest;
 import com.naz.profiler.service.ProfileService;
+import jakarta.validation.Valid;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
 
-import java.util.UUID;
 
 @RestController
 @RequestMapping("api/profiles")
@@ -18,27 +18,18 @@ public class ProfileController {
         this.service = service;
     }
 
-    @PostMapping
-    public ResponseEntity<ApiResponse> create(@RequestBody ProfileRequest request) {
-        return service.createProfile(request);
-    }
-
-    @GetMapping("/{id}")
-    public ResponseEntity<ApiResponse> get(@PathVariable UUID id) {
-        return service.getProfile(id);
-    }
 
     @GetMapping
-    public ResponseEntity<ApiResponse> getAll(
-            @RequestParam(required = false) String gender,
-            @RequestParam(name = "country_id",required = false) String countryId,
-            @RequestParam(name = "age_group",required = false) String ageGroup
-    ) {
-        return service.getProfiles(gender, countryId, ageGroup);
+    public ResponseEntity<ApiResponse> getAll(@Valid @ModelAttribute ProfileFilterRequest request) {
+        return service.getProfiles(request);
     }
 
-    @DeleteMapping("/{id}")
-    public ResponseEntity<ApiResponse> delete(@PathVariable UUID id) {
-        return service.deleteProfile(id);
+    @GetMapping("/search")
+    public ResponseEntity<ApiResponse> search(
+            @RequestParam String query,
+            @RequestParam(required = false) Integer page,
+            @RequestParam(required = false) Integer limit
+    ) {
+        return service.search(query, page, limit);
     }
 }

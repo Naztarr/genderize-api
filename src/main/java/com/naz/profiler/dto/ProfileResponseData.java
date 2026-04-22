@@ -11,13 +11,13 @@ public record ProfileResponseData(
         String gender,
         @JsonProperty("gender_probability")
         double genderProbability,
-        @JsonProperty("sample_size")
-        Integer sampleSize,
         Integer age,
         @JsonProperty("age_group")
         String ageGroup,
         @JsonProperty("country_id")
         String countryId,
+        @JsonProperty("country_name")
+        String countryName,
         @JsonProperty("country_probability")
         double countryProbability,
         @JsonProperty("created_at")

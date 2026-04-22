@@ -13,6 +13,8 @@ import java.time.Instant;
 import java.util.UUID;
 
 @Entity
+@Table(name = "profiles",
+        uniqueConstraints = @UniqueConstraint(columnNames = "name"))
 @Getter
 @Setter
 @AllArgsConstructor
@@ -25,15 +27,12 @@ public class Profile {
     private UUID id;
 
     private String name;
-
     private String gender;
     private double genderProbability;
-    private int sampleSize;
-
     private Integer age;
     private String ageGroup;
-
     private String countryId;
+    private String countryName;
     private double countryProbability;
 
     @CreationTimestamp

@@ -1,117 +1,134 @@
-# Profile Intelligence Service
+# 📌 Intelligence Query Engine
 
-## 📌 Overview
+## 🧠 Overview
 
-This service accepts a name, enriches the profile using multiple external APIs, stores the processed result in a database, and provides endpoints for retrieval, filtering, and deletion.
+The Intelligence Query Engine is a backend system that enables flexible querying of demographic profile data through:
 
----
-## 🚀 Base URL
-https://genderize-api-production.up.railway.app
+- Advanced filtering
+- Sorting
+- Pagination
+- Rule-based Natural Language Query parsing
 
-## 📍 Endpoints
-
-```
-GET /api/classify?name=<name>
-```
-```
-POST /api/profiles
-```
-```
-GET /api/profiles
-```
-```
-GET /api/profiles/{id}
-```
-```
-DELETE /api/profiles/{id}
-```
-
+It transforms both structured query parameters and natural language input into a unified `ProfileFilterRequest`, which is then executed using a **Specification-based query system** for efficient database filtering.
 
 ---
 
-## ✅ Success Response
+## ⚙️ Core Features
+
+- Advanced multi-field filtering (combinable conditions)
+- Dynamic sorting (age, created_at, gender_probability)
+- Pagination with limits and page control
+- Natural language query interpretation (rule-based NLP)
+- Strict validation and error handling
+
+---
+
+## 🔍 Advanced Filtering
+
+Supported query parameters:
+
+| Field                   | Description                    |
+|-------------------------|--------------------------------|
+| gender                  | male / female                  |
+| age_group               | child, teenager, adult, senior |
+| country_id              | ISO country code               |
+| min_age                 | minimum age                    |
+| max_age                 | maximum age                    |
+| min_gender_probability  | gender confidence threshold    |
+| min_country_probability | country confidence threshold   |
+
+### Example
+```/api/profiles?gender=male&country_id=NG&min_age=25```
+
+
+### All filters are **combinable** and evaluated using AND logic.
+
+---
+
+## 🔃 Sorting
+
+| Parameter | Values                              |
+|-----------|-------------------------------------|
+| sort_by   | age, created_at, gender_probability |
+| order     | asc, desc                           |
+
+### Example
+```/api/profiles?sort_by=age&order=desc```
+
+
+Default sorting:
+- `created_at DESC`
+
+---
+
+## 📄 Pagination
+
+| Parameter | Default | Constraint |
+|-----------|---------|------------|
+| page      | 1       | ≥ 1        |
+| limit     | 10      | max 50     |
+
+### Response Format
 
 ```json
 {
   "status": "success",
-
-  "data": {
-
-    "id": "b3f9c1e2-7d4a-4c91-9c2a-1f0a8e5b6d12",
-
-    "name": "ella",
-
-    "gender": "female",
-
-    "gender_probability": 0.99,
-
-    "sample_size": 1234,
-
-    "age": 46,
-
-    "age_group": "adult",
-
-    "country_id": "DRC",
-
-    "country_probability": 0.85,
-
-    "created_at": "2026-04-01T12:00:00Z"
-  }
+  "page": 1,
+  "limit": 10,
+  "total": 2026,
+  "data": []
 }
 ```
-
 ---
+## 🧠 Natural Language Parsing Approach
+### 🔧 Approach
+The system uses a rule-based Natural Language Processing (NLP) parser. It does not use AI or machine learning.
 
-## ❌ Error Responses
+Instead, it relies on:
 
-### Missing Name (400)
+- Keyword matching
+- Regular expressions
+- Java Locale country mapping
+- Deterministic rule-based extraction
 
-```json
-{
-  "status": "error",
-  "message": "Name is required"
-}
+The parsed output is converted into a ProfileFilterRequest, which is then processed by the Specification-based filtering engine.
+### Examples:
+
 ```
-
-### Invalid Format (422)
-
-```json
-{
-  "status": "error",
-  "message": "Invalid name format"
-}
+"females above 30" → gender=female, min_age=30
+"young males" → age range 16–24
+adult males from kenya with gender confidence above 0.7 
+Parsed into:
+- gender = male
+- age_group = adult
+- country_id = KE
+- min_gender_probability = 0.7
 ```
+## Limitations
+1. Rule-Based Only
+   - No AI/ML or semantic understanding
+   - Strict keyword and regex logic only
+2. Limited Language Understanding
 
-### No Prediction Available (200)
+    - Cannot handle complex or ambiguous queries:
 
-```json
-{
-  "status": "error",
-  "message": "No prediction available for the provided name"
-}
-```
+    Example not supported:
+   ```
+   users who are not young but not old
+   ```
+3. Limited Synonyms
 
-### External API Failure (502)
+   Only predefined keywords are supported:
 
-```json
-{
-  "status": "502", 
-  "message": "${externalApi} returned an invalid response"
-}
-```
+    - young
+    - adult
+    - teenager
+    - senior
 
----
+    Synonyms like:
 
-## ⚙️ Features
-
-* Input validation
-* External API integration: genderize, agify and nationalize
-* Confidence scoring logic
-* ISO 8601 timestamp generation
-* Proper HTTP status handling
-* CORS enabled
-
----
+    - youths
+    - elders, are not recognized.
 
 ## 🛠️ Tech Stack
 
