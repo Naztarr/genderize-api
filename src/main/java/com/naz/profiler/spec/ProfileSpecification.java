@@ -20,9 +20,9 @@ public class ProfileSpecification {
                     filter.getCountryId().toLowerCase()));
             if(filter.getMinAge() != null) pd.add(cb.ge(root.get("age"), filter.getMinAge()));
             if(filter.getMaxAge() != null) pd.add(cb.le(root.get("age"), filter.getMaxAge()));
-            if(filter.getMinGenderProbability() != null) pd.add(cb.ge(root.get("minGenderProbability"),
+            if(filter.getMinGenderProbability() != null) pd.add(cb.ge(root.get("genderProbability"),
                     filter.getMinGenderProbability()));
-            if(filter.getMinCountryProbability() != null) pd.add(cb.ge(root.get("minCountryProbability"),
+            if(filter.getMinCountryProbability() != null) pd.add(cb.ge(root.get("countryProbability"),
                     filter.getMinCountryProbability()));
             return cb.and(pd.toArray(new Predicate[0]));
 

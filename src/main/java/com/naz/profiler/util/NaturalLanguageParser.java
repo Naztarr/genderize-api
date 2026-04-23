@@ -29,9 +29,14 @@ public class NaturalLanguageParser {
 
 
         // Gender
-        if (s.contains("female")) {
+        boolean hasMale = Pattern.compile("\\bmales?\\b").matcher(s).find();
+        boolean hasFemale = Pattern.compile("\\bfemales?\\b").matcher(s).find();
+
+        if (hasMale && hasFemale) {
+            gender = null; // means both
+        } else if (hasFemale) {
             gender = "female";
-        } else if (s.contains("male")) {
+        } else if (hasMale) {
             gender = "male";
         }
 
