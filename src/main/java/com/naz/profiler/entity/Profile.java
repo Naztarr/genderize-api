@@ -28,12 +28,12 @@ public class Profile {
 
     private String name;
     private String gender;
-    private double genderProbability;
+    private Double genderProbability;
     private Integer age;
     private String ageGroup;
     private String countryId;
     private String countryName;
-    private double countryProbability;
+    private Double countryProbability;
 
     @CreationTimestamp
     @CreatedDate

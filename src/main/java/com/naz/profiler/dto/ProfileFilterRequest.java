@@ -3,51 +3,38 @@ package com.naz.profiler.dto;
 import com.fasterxml.jackson.annotation.JsonProperty;
 import jakarta.validation.constraints.Max;
 import jakarta.validation.constraints.Min;
-import lombok.AllArgsConstructor;
-import lombok.Getter;
-import lombok.NoArgsConstructor;
-import lombok.Setter;
+import lombok.*;
 
 @Getter
 @Setter
-@AllArgsConstructor
 @NoArgsConstructor
-public class ProfileFilterRequest{
-private String gender;
+@AllArgsConstructor
+@Builder
+public class ProfileFilterRequest {
+        private String gender;
 
-@JsonProperty("age_group")
-private String ageGroup;
+        @JsonProperty("age_group")
+        private String ageGroup;
 
-@JsonProperty("country_id")
-private String countryId;
+        @JsonProperty("country_id")
+        private String countryId;
 
-@Min(0)
-@JsonProperty("min_age")
-private Integer minAge;
+        @JsonProperty("min_age")
+        private Integer minAge;
 
-@Min(0)
-@JsonProperty("max_age")
-private Integer maxAge;
+        @JsonProperty("max_age")
+        private Integer maxAge;
 
-@Min(0)
-@Max(1)
-@JsonProperty("min_gender_probability")
-private Double minGenderProbability;
+        @JsonProperty("min_gender_probability")
+        private Double minGenderProbability;
 
-@Min(0)
-@Max(1)
-@JsonProperty("min_country_probability")
-private Double minCountryProbability;
+        @JsonProperty("min_country_probability")
+        private Double minCountryProbability;
 
-@JsonProperty("sort_by")
-private String sortBy;
+        @JsonProperty("sort_by")
+        private String sortBy;
 
-private String order;
-
-@Min(1)
-private Integer page;
-
-@Min(1)
-@Max(50)
-private Integer limit;
-        }
+        private String order;
+        private Integer page;
+        private Integer limit;
+}

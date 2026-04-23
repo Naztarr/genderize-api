@@ -69,15 +69,14 @@ public class ProfileServiceImpl implements ProfileService {
 
 
     private String mapSortField(String sortBy) {
-
-        if (sortBy == null || sortBy.isBlank()) {
-            return "createdAt";
-        }
-
-        return switch (sortBy) {
+        if (sortBy == null) return "createdAt";
+        return switch (sortBy.toLowerCase()) {
             case "age" -> "age";
-            case "created_at" -> "createdAt";
             case "gender_probability" -> "genderProbability";
+            case "country_probability" -> "countryProbability";
+            case "created_at" -> "createdAt";
+            case "age_group" -> "ageGroup";
+            case "country_id" -> "countryId";
             default -> "createdAt";
         };
     }
