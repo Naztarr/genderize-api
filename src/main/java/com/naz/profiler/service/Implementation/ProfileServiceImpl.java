@@ -24,18 +24,22 @@ public class ProfileServiceImpl implements ProfileService {
 
     @Override
     public ResponseEntity<ApiResponse> getProfiles(ProfileFilterRequest filter) {
+
+        int page = (filter.getPage() == null || filter.getPage() < 1) ? 1 : filter.getPage();
+        int limit = (filter.getLimit() == null || filter.getLimit() < 1) ? 10 : Math.min(filter.getLimit(), 50);
+
         Sort sort = Sort.by("desc".equalsIgnoreCase(filter.getOrder())?
                 Sort.Direction.DESC : Sort.Direction.ASC,
-                filter.getSortBy() == null? "createdAt" : filter.getSortBy());
+                filter.getSortBy() == null? "createdAt" : mapSortField(filter.getSortBy()));
 
-        Pageable pageable = PageRequest.of(filter.getPage()-1,
-                Math.min(filter.getLimit(), 50), sort);
+        Pageable pageable = PageRequest.of(page-1,
+                Math.min(limit, 50), sort);
 
         Page<Profile> pageResult = repository
                 .findAll(ProfileSpecification.filter(filter), pageable);
 
-        return ResponseEntity.ok(new PageProfileResponse(filter.getPage(),
-                filter.getLimit(), pageResult.getTotalElements(),
+        return ResponseEntity.ok(new PageProfileResponse(page,
+                limit, pageResult.getTotalElements(),
                 pageResult.stream().map(this::mapToProfileResponseData).toList()));
     }
 
@@ -60,5 +64,16 @@ public class ProfileServiceImpl implements ProfileService {
                 profile.getGender(), profile.getGenderProbability(), profile.getAge(),
                 profile.getAgeGroup(), profile.getCountryId(), profile.getCountryName(),
                 profile.getCountryProbability(), profile.getCreatedAt());
+    }
+
+    private String mapSortField(String sortBy) {
+        if (sortBy == null || sortBy.isBlank()) return "createdAt";
+
+        return switch (sortBy) {
+            case "age" -> "age";
+            case "created_at" -> "createdAt";
+            case "gender_probability" -> "genderProbability";
+            default -> "createdAt";
+        };
     }
 }
