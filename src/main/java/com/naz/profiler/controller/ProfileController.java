@@ -26,10 +26,10 @@ public class ProfileController {
 
     @GetMapping("/search")
     public ResponseEntity<ApiResponse> search(
-            @RequestParam String query,
+            @RequestParam String q,
             @RequestParam(required = false) Integer page,
             @RequestParam(required = false) Integer limit
     ) {
-        return service.search(query, page, limit);
+        return service.search(q, page, limit);
     }
 }
