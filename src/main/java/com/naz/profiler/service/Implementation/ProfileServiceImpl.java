@@ -66,8 +66,13 @@ public class ProfileServiceImpl implements ProfileService {
                 profile.getCountryProbability(), profile.getCreatedAt());
     }
 
+
+
     private String mapSortField(String sortBy) {
-        if (sortBy == null || sortBy.isBlank()) return "createdAt";
+
+        if (sortBy == null || sortBy.isBlank()) {
+            return "createdAt";
+        }
 
         return switch (sortBy) {
             case "age" -> "age";
@@ -76,4 +81,23 @@ public class ProfileServiceImpl implements ProfileService {
             default -> "createdAt";
         };
     }
+
+
+
+
+
+
+
+
+
+//    private String mapSortField(String sortBy) {
+//        if (sortBy == null || sortBy.isBlank()) return "createdAt";
+//
+//        return switch (sortBy) {
+//            case "age" -> "age";
+//            case "created_at" -> "createdAt";
+//            case "gender_probability" -> "genderProbability";
+//            default -> "createdAt";
+//        };
+//    }
 }
