@@ -19,7 +19,7 @@ public class NaturalLanguageParser {
 
         String gender = null;
         String ageGroup = null;
-        String countryId = null;
+        String countryId = CountryResolver.resolveCode(s);
 
         Integer minAge = null;
         Integer maxAge = null;
@@ -64,7 +64,6 @@ public class NaturalLanguageParser {
             minAge = 16;
             maxAge = 24;
         }
-        countryId = CountryResolver.resolveCode(s);
 
 
         /**Age Rules
