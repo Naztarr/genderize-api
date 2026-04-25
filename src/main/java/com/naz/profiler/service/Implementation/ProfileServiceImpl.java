@@ -1,6 +1,6 @@
 package com.naz.profiler.service.Implementation;
 
-import com.naz.profiler.dto.*;X
+import com.naz.profiler.dto.*;
 import com.naz.profiler.entity.Profile;
 import com.naz.profiler.repository.ProfileRepository;
 import com.naz.profiler.service.ProfileService;
