@@ -1,6 +1,6 @@
 package com.naz.profiler.service.Implementation;
 
-import com.naz.profiler.dto.*;
+import com.naz.profiler.dto.*;X
 import com.naz.profiler.entity.Profile;
 import com.naz.profiler.repository.ProfileRepository;
 import com.naz.profiler.service.ProfileService;
@@ -67,7 +67,6 @@ public class ProfileServiceImpl implements ProfileService {
     }
 
 
-
     private String mapSortField(String sortBy) {
         if (sortBy == null) return "createdAt";
         return switch (sortBy.toLowerCase()) {
@@ -80,23 +79,4 @@ public class ProfileServiceImpl implements ProfileService {
             default -> "createdAt";
         };
     }
-
-
-
-
-
-
-
-
-
-//    private String mapSortField(String sortBy) {
-//        if (sortBy == null || sortBy.isBlank()) return "createdAt";
-//
-//        return switch (sortBy) {
-//            case "age" -> "age";
-//            case "created_at" -> "createdAt";
-//            case "gender_probability" -> "genderProbability";
-//            default -> "createdAt";
-//        };
-//    }
 }
