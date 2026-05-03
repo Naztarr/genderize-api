@@ -9,7 +9,7 @@ import lombok.NoArgsConstructor;
 @AllArgsConstructor
 @NoArgsConstructor
 @Builder
-public class AuthResponse {
+public class AuthResponse implements ApiResponse{
     private String status;
     private String accessToken;
     private String refreshToken;

@@ -21,7 +21,9 @@ It transforms both structured query parameters and natural language input into a
 
 ## ⚙️ Core Features
 
-
+- Authentication
+- Role-Based Access Control
+- CLI Integration
 - Advanced multi-field filtering (combinable conditions)
 - Dynamic sorting (age, created_at, gender_probability)
 - Pagination with limits and page control

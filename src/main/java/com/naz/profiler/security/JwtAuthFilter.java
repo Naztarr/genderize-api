@@ -1,9 +1,12 @@
 package com.naz.profiler.security;
 
 import com.naz.profiler.entity.User;
+import com.naz.profiler.exception.DisabledException;
+import com.naz.profiler.repository.RefreshTokenRepository;
 import com.naz.profiler.repository.UserRepository;
 import jakarta.servlet.FilterChain;
 import jakarta.servlet.ServletException;
+import jakarta.servlet.http.Cookie;
 import jakarta.servlet.http.HttpServletRequest;
 import jakarta.servlet.http.HttpServletResponse;
 import lombok.RequiredArgsConstructor;
@@ -22,6 +25,7 @@ import java.util.UUID;
 public class JwtAuthFilter extends OncePerRequestFilter {
     private final JwtService jwtService;
     private final UserRepository userRepository;
+    private final RefreshTokenRepository refreshTokenRepository;
 
     @Override
     protected void doFilterInternal(
@@ -30,14 +34,13 @@ public class JwtAuthFilter extends OncePerRequestFilter {
             FilterChain filterChain)
             throws ServletException, IOException {
 
-        String auth = request.getHeader("Authorization");
+        String token = recoverToken(request);
 
-        if(auth == null || !auth.startsWith("Bearer ")) {
-            filterChain.doFilter(request,response);
+        // If no token was found anywhere, just continue the filter chain
+        if (token == null) {
+            filterChain.doFilter(request, response);
             return;
         }
-
-        String token = auth.substring(7);
 
         if(jwtService.valid(token)) {
 
@@ -47,6 +50,24 @@ public class JwtAuthFilter extends OncePerRequestFilter {
             User user = userRepository.findById(userId).orElse(null);
 
             if(user != null) {
+                // This ensures that if they clicked 'logout', this token is now useless.
+                boolean hasActiveSession = refreshTokenRepository.existsByUserAndAndRevokedIsFalse(user);
+                if (!hasActiveSession) {
+                    response.setStatus(HttpServletResponse.SC_UNAUTHORIZED);
+                    return; // Block the request immediately
+                }
+
+                if (!user.getIsActive()) {
+                    response.setStatus(HttpServletResponse.SC_FORBIDDEN);
+                    response.setContentType("application/json");
+                    response.getWriter().write("""
+                        {
+                          "status":"error",
+                          "message":"Account disabled"
+                        }
+                    """);
+                    return;
+                }
 
                 UsernamePasswordAuthenticationToken authentication =
                         new UsernamePasswordAuthenticationToken(
@@ -65,5 +86,22 @@ public class JwtAuthFilter extends OncePerRequestFilter {
         }
 
         filterChain.doFilter(request,response);
+    }
+
+    private String recoverToken(HttpServletRequest request) {
+        String authHeader = request.getHeader("Authorization");
+        if (authHeader != null && authHeader.startsWith("Bearer ")) {
+            String token = authHeader.substring(7);
+            return token.isBlank() ? null : token;
+        }
+
+        if (request.getCookies() != null) {
+            for (Cookie cookie : request.getCookies()) {
+                if ("accessToken".equals(cookie.getName())) {
+                    return cookie.getValue();
+                }
+            }
+        }
+        return null;
     }
 }
