@@ -1,6 +1,7 @@
 package com.naz.profiler.security;
 
 import com.naz.profiler.config.ApiVersionFilter;
+import com.naz.profiler.config.RequestLoggingFilter;
 import jakarta.servlet.FilterChain;
 import jakarta.servlet.ServletException;
 import jakarta.servlet.http.HttpServletRequest;
@@ -31,6 +32,7 @@ import java.io.IOException;
 public class SecurityConfig {
     private final JwtAuthFilter jwtAuthFilter;
     private final ApiVersionFilter apiVersionFilter;
+    private final RequestLoggingFilter requestLoggingFilter;
 
     @Bean
     SecurityFilterChain filterChain(HttpSecurity http) throws Exception {
@@ -45,13 +47,17 @@ public class SecurityConfig {
                 .csrf(csrf -> csrf
                         .csrfTokenRepository(CookieCsrfTokenRepository.withHttpOnlyFalse())
                         .csrfTokenRequestHandler(requestHandler)
+                        .ignoringRequestMatchers("/h2-console/**")
                         // We ignore CSRF for the auth endpoints because they handle the initial login/callback
                         .ignoringRequestMatchers("/auth/**")
                 )
+                .headers(headers -> headers
+                        .frameOptions(frame -> frame.sameOrigin()))
                 // Add the filter that pushes the CSRF cookie to the response
                 .addFilterAfter(new CsrfCookieFilter(), BasicAuthenticationFilter.class)
 
                 .authorizeHttpRequests(auth -> auth
+                        .requestMatchers("/h2-console/**").permitAll()
                         .requestMatchers("/auth/**").permitAll()
                         .requestMatchers(HttpMethod.GET, "/user").hasAnyRole("ADMIN","ANALYST")
                         .requestMatchers(HttpMethod.GET, "/api/**")
@@ -62,6 +68,8 @@ public class SecurityConfig {
                         .requestMatchers(HttpMethod.DELETE, "/api/**").hasRole("ADMIN")
                         .anyRequest().authenticated()
                 )
+                // Add Logging first to capture everything
+                .addFilterBefore(requestLoggingFilter, UsernamePasswordAuthenticationFilter.class)
                 .addFilterBefore(apiVersionFilter, UsernamePasswordAuthenticationFilter.class)
                 .addFilterAfter(jwtAuthFilter, ApiVersionFilter.class);
 
