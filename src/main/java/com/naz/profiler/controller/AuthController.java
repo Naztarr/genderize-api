@@ -44,10 +44,22 @@ public class AuthController {
     public void callback(
             @RequestParam String code, HttpServletResponse response
     ) throws IOException {
-        AuthResponse authData = githubOAuthService.login(code);
+//        AuthResponse authData = githubOAuthService.login(code);
+//
+//        addAuthCookies(response, authData.getAccessToken(), authData.getRefreshToken());
+//        response.sendRedirect("http://localhost:3000/dashboard");
+        try {
+            AuthResponse authData = githubOAuthService.login(code);
+            addAuthCookies(response, authData.getAccessToken(), authData.getRefreshToken());
+            response.sendRedirect("http://localhost:3000/dashboard");
+        } catch (Exception e) {
+            // This will print the FULL error and line number in your Railway logs
+            e.printStackTrace();
 
-        addAuthCookies(response, authData.getAccessToken(), authData.getRefreshToken());
-        response.sendRedirect("http://localhost:3000/dashboard");
+            // Send the error message to the browser so you can see it
+            response.setStatus(HttpServletResponse.SC_INTERNAL_SERVER_ERROR);
+            response.getWriter().write("Error: " + e.getMessage());
+        }
     }
 
     @PostMapping("/cli/exchange")
