@@ -51,7 +51,7 @@ public class AuthController {
         try {
             AuthResponse authData = githubOAuthService.login(code);
             addAuthCookies(response, authData.getAccessToken(), authData.getRefreshToken());
-            response.sendRedirect("http://localhost:3000/dashboard");
+            response.sendRedirect("https://insighta-web-production-037e.up.railway.app/dashboard");
         } catch (Exception e) {
             // This will print the FULL error and line number in your Railway logs
             e.printStackTrace();
@@ -93,7 +93,7 @@ public class AuthController {
                 .secure(true) // Set to false only for local localhost testing without SSL
                 .path("/")
                 .maxAge(180)
-                .sameSite("None")
+                .sameSite("none")
                 .build();
 
         ResponseCookie refreshCookie = ResponseCookie.from("refreshToken", refresh)
@@ -101,7 +101,7 @@ public class AuthController {
                 .secure(true)
                 .path("/")
                 .maxAge(300)
-                .sameSite("None")
+                .sameSite("none")
                 .build();
 
         response.addHeader(HttpHeaders.SET_COOKIE, accessCookie.toString());
