@@ -93,7 +93,7 @@ public class AuthController {
                 .secure(true) // Set to false only for local localhost testing without SSL
                 .path("/")
                 .maxAge(180)
-                .sameSite("Lax")
+                .sameSite("None")
                 .build();
 
         ResponseCookie refreshCookie = ResponseCookie.from("refreshToken", refresh)
@@ -101,7 +101,7 @@ public class AuthController {
                 .secure(true)
                 .path("/")
                 .maxAge(300)
-                .sameSite("Lax")
+                .sameSite("None")
                 .build();
 
         response.addHeader(HttpHeaders.SET_COOKIE, accessCookie.toString());
