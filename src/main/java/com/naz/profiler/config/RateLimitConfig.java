@@ -14,10 +14,10 @@ import org.springframework.context.annotation.Configuration;
 
 @Configuration
 public class RateLimitConfig {
-//    @Value("${spring.data.redis.url:redis://localhost:6379}")
-//    private String redisUrl;
+    @Value("${spring.data.redis.url:redis://localhost:6379}")
+    private String redisUrl;
 
-    private String redisUrl = "redis://localhost:6379";
+//    private String redisUrl = "redis://localhost:6379";
 
     @Bean
     public RedisClient redisClient() {
