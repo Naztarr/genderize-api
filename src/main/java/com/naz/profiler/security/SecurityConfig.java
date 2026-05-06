@@ -28,6 +28,7 @@ import org.springframework.web.filter.OncePerRequestFilter;
 
 import java.io.IOException;
 import java.util.Arrays;
+import java.util.List;
 
 @Configuration
 @EnableWebSecurity
@@ -67,10 +68,10 @@ public class SecurityConfig {
                 .addFilterAfter(new CsrfCookieFilter(), BasicAuthenticationFilter.class)
 
                 .authorizeHttpRequests(auth -> auth
+                        .requestMatchers(HttpMethod.OPTIONS, "/**").permitAll()
                         .requestMatchers("/h2-console/**").permitAll()
                         .requestMatchers("/auth/**").permitAll()
-                                .requestMatchers("/user/me").authenticated()
-//                        .requestMatchers(HttpMethod.GET, "/user").hasAnyRole("ADMIN","ANALYST")
+                        .requestMatchers(HttpMethod.GET, "/user").hasAnyRole("ADMIN","ANALYST")
                         .requestMatchers(HttpMethod.GET, "/api/**")
                         .hasAnyRole("ADMIN","ANALYST")
                         .requestMatchers(HttpMethod.POST, "/api/**").hasRole("ADMIN")
@@ -110,7 +111,9 @@ public class SecurityConfig {
         configuration.setAllowedOrigins(Arrays.asList("https://insighta-web-production-037e.up.railway.app"));
         configuration.setAllowedMethods(Arrays.asList("GET","POST","PUT","PATCH","DELETE","OPTIONS"));
         // Add X-XSRF-TOKEN here!
-        configuration.setAllowedHeaders(Arrays.asList("Authorization", "Content-Type", "X-XSRF-TOKEN"));
+        configuration.setAllowedHeaders(Arrays.asList("Authorization", "Content-Type", "Accept", "X-Requested-With", "X-XSRF-TOKEN"));
+        // Allow the browser to read the Authorization header from the response
+        configuration.setExposedHeaders(List.of("Authorization"));
         configuration.setAllowCredentials(true);
 
         UrlBasedCorsConfigurationSource source = new UrlBasedCorsConfigurationSource();
