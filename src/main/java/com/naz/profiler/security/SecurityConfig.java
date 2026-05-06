@@ -54,13 +54,14 @@ public class SecurityConfig {
                 .sessionManagement(s ->
                         s.sessionCreationPolicy(SessionCreationPolicy.STATELESS))
                 // --- CSRF IMPLEMENTATION ---
-                .csrf(csrf -> csrf
-                        .csrfTokenRepository(tokenRepository)
-                        .csrfTokenRequestHandler(requestHandler)
-                        .ignoringRequestMatchers("/h2-console/**")
-                        // We ignore CSRF for the auth endpoints because they handle the initial login/callback
-                        .ignoringRequestMatchers("/auth/**")
-                )
+                .csrf(csrf -> csrf.disable())
+//                .csrf(csrf -> csrf
+//                        .csrfTokenRepository(tokenRepository)
+//                        .csrfTokenRequestHandler(requestHandler)
+//                        .ignoringRequestMatchers("/h2-console/**")
+//                        // We ignore CSRF for the auth endpoints because they handle the initial login/callback
+//                        .ignoringRequestMatchers("/auth/**")
+//                )
                 .headers(headers -> headers
                         .frameOptions(frame -> frame.sameOrigin()))
                 // Add the filter that pushes the CSRF cookie to the response
