@@ -111,7 +111,8 @@ public class SecurityConfig {
         configuration.setAllowedOrigins(Arrays.asList("https://insighta-web-production-037e.up.railway.app"));
         configuration.setAllowedMethods(Arrays.asList("GET","POST","PUT","PATCH","DELETE","OPTIONS"));
         // Add X-XSRF-TOKEN here!
-        configuration.setAllowedHeaders(Arrays.asList("Authorization", "Content-Type", "Accept", "X-Requested-With", "X-XSRF-TOKEN"));
+        configuration.setAllowedHeaders(Arrays.asList("Authorization", "Content-Type",
+                "Accept", "X-Requested-With", "X-API-Version", "X-XSRF-TOKEN"));
         // Allow the browser to read the Authorization header from the response
         configuration.setExposedHeaders(List.of("Authorization"));
         configuration.setAllowCredentials(true);
