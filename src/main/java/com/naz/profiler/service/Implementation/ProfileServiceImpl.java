@@ -16,6 +16,7 @@ import org.springframework.data.domain.Sort;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.stereotype.Service;
+import org.springframework.transaction.annotation.Transactional;
 
 import java.io.PrintWriter;
 import java.time.Instant;
@@ -120,6 +121,7 @@ public class ProfileServiceImpl implements ProfileService {
         return name.isEmpty() ? countryId : name;
     }
 
+    @Transactional(readOnly = true)
     @Override
     public ResponseEntity<ApiResponse> getProfile(UUID id) {
 
@@ -135,6 +137,7 @@ public class ProfileServiceImpl implements ProfileService {
                 );
     }
 
+    @Transactional(readOnly = true)
     @Override
     public ResponseEntity<ApiResponse> getProfiles(ProfileFilterRequest filter) {
 
@@ -163,6 +166,7 @@ public class ProfileServiceImpl implements ProfileService {
                 pageResult.stream().map(this::mapToProfileResponseData).toList()));
     }
 
+    @Transactional(readOnly = true)
     @Override
     public ResponseEntity<ApiResponse> search(String words, Integer page, Integer limit) {
         if (words == null || words.isBlank()) {
