@@ -10,17 +10,14 @@ import org.apache.commons.csv.CSVParser;
 import org.apache.commons.csv.CSVRecord;
 import org.springframework.cache.annotation.CacheEvict;
 import org.springframework.jdbc.core.JdbcTemplate;
-import org.springframework.scheduling.annotation.Async;
 import org.springframework.stereotype.Service;
 import org.springframework.web.multipart.MultipartFile;
 
 import java.io.BufferedReader;
 import java.io.InputStreamReader;
 import java.sql.PreparedStatement;
-import java.util.ArrayList;
-import java.util.HashMap;
-import java.util.List;
-import java.util.Map;
+import java.util.*;
+import java.util.stream.Collectors;
 
 @Service
 @RequiredArgsConstructor
@@ -31,7 +28,7 @@ public class CsvUploadServiceImpl implements CsvUploadService {
 
     private final ProfileRepository repository;
 
-    @Async
+
     @CacheEvict(value = "profiles", allEntries = true)
     @Override
     public CsvUploadResponse upload(MultipartFile file) throws Exception {
@@ -43,6 +40,7 @@ public class CsvUploadServiceImpl implements CsvUploadService {
         Map<String, Integer> reasons = new HashMap<>();
 
         List<Profile> batch = new ArrayList<>();
+        Set<String> batchNames = new HashSet<>();
 
         try (
                 BufferedReader reader =
@@ -78,7 +76,11 @@ public class CsvUploadServiceImpl implements CsvUploadService {
                             isBlank(name) ||
                                     isBlank(gender) ||
                                     isBlank(ageValue) ||
-                                    isBlank(countryId)
+                                    isBlank(countryId) ||
+                                    isBlank(ageGroup) ||
+                                    isBlank(countryName) ||
+                                    isBlank(genderProbabilityValue) ||
+                                    isBlank(countryProbabilityValue)
                     ) {
 
                         skipped++;
@@ -102,6 +104,7 @@ public class CsvUploadServiceImpl implements CsvUploadService {
                         continue;
                     }
 
+                    //Validate gender value
                     gender = gender.trim().toLowerCase();
 
                     if (
@@ -113,12 +116,20 @@ public class CsvUploadServiceImpl implements CsvUploadService {
                         continue;
                     }
 
-                    boolean exists =
-                            repository.findByNameIgnoreCase(name).isPresent();
+                    //Validate age group
+                    ageGroup = ageGroup.trim().toLowerCase();
+                    Set<String> validAgeGroups = Set.of(
+                            "child",
+                            "teenager",
+                            "adult",
+                            "senior"
+                    );
 
-                    if (exists) {
+                    if (!validAgeGroups.contains(ageGroup)) {
+
                         skipped++;
-                        increment(reasons, "duplicate_name");
+                        increment(reasons, "invalid_age_group");
+
                         continue;
                     }
 
@@ -132,6 +143,16 @@ public class CsvUploadServiceImpl implements CsvUploadService {
 
                         countryProbability =
                                 Double.parseDouble(countryProbabilityValue);
+                        if (
+                                genderProbability < 0 ||
+                                        genderProbability > 1 ||
+                                        countryProbability < 0 ||
+                                        countryProbability > 1
+                        ) {
+                            skipped++;
+                            increment(reasons, "invalid_probability");
+                            continue;
+                        }
 
                     } catch (Exception ex) {
 
@@ -142,25 +163,37 @@ public class CsvUploadServiceImpl implements CsvUploadService {
 
                     Profile profile = new Profile();
 
-                    profile.setName(name);
-                    profile.setGender(gender);
+                    profile.setName(name.trim());
+                    profile.setGender(gender.trim());
                     profile.setAge(age);
-                    profile.setAgeGroup(ageGroup);
-                    profile.setCountryId(countryId.toUpperCase());
-                    profile.setCountryName(countryName);
+                    profile.setAgeGroup(ageGroup.trim());
+                    profile.setCountryId(countryId.toUpperCase().trim());
+                    profile.setCountryName(countryName.trim());
 
                     profile.setGenderProbability(genderProbability);
                     profile.setCountryProbability(countryProbability);
+
+
+                    String normalizedName =
+                            profile.getName().trim().toLowerCase();
+
+                    if (batchNames.contains(normalizedName)) {
+
+                        skipped++;
+                        increment(reasons, "duplicate_name");
+
+                        continue;
+                    }
+
+                    batchNames.add(normalizedName);
 
                     batch.add(profile);
 
                     if (batch.size() >= BATCH_SIZE) {
 
-                        batchInsert(batch);
-
-                        inserted += batch.size();
-
+                        inserted += batchInsert(batch, reasons);
                         batch.clear();
+                        batchNames.clear();
                     }
 
                 } catch (Exception ex) {
@@ -172,9 +205,9 @@ public class CsvUploadServiceImpl implements CsvUploadService {
 
             if (!batch.isEmpty()) {
 
-                batchInsert(batch);
-
-                inserted += batch.size();
+                inserted += batchInsert(batch, reasons);
+                batch.clear();
+                batchNames.clear();
             }
         }
 
@@ -187,36 +220,82 @@ public class CsvUploadServiceImpl implements CsvUploadService {
         );
     }
 
-    private void batchInsert(List<Profile> batch) {
+    private int batchInsert(
+            List<Profile> batch,
+            Map<String, Integer> reasons
+    ) {
+
+        Set<String> names =
+                batch.stream()
+                        .map(p -> p.getName().trim().toLowerCase())
+                        .collect(Collectors.toSet());
+
+        List<Profile> existingProfiles =
+                repository.findExistingNames(names);
+
+        Set<String> existingNames =
+                existingProfiles.stream()
+                        .map(p -> p.getName().trim().toLowerCase())
+                        .collect(Collectors.toSet());
+
+        List<Profile> filteredBatch =
+                batch.stream()
+                        .filter(p ->
+                                !existingNames.contains(
+                                        p.getName()
+                                                .trim()
+                                                .toLowerCase()))
+                        .toList();
+
+        int duplicates =
+                batch.size() - filteredBatch.size();
+
+        if (duplicates > 0) {
+
+            reasons.put(
+                    "duplicate_name",
+                    reasons.getOrDefault(
+                            "duplicate_name",
+                            0
+                    ) + duplicates
+            );
+        }
+
+        if (filteredBatch.isEmpty()) {
+            return 0;
+        }
 
         String sql = """
-                INSERT INTO profiles
-                (
-                    name,
-                    gender,
-                    gender_probability,
-                    age,
-                    age_group,
-                    country_id,
-                    country_name,
-                    country_probability,
-                )
-                VALUES
-                (?, ?, ?, ?, ?, ?, ?, ?)
-                """;
+            INSERT INTO profiles
+            (
+                name,
+                gender,
+                gender_probability,
+                age,
+                age_group,
+                country_id,
+                country_name,
+                country_probability
+            )
+            VALUES
+            (?, ?, ?, ?, ?, ?, ?, ?)
+            ON CONFLICT (name) DO NOTHING
+            """;
 
         jdbcTemplate.batchUpdate(
                 sql,
-                batch,
-                batch.size(),
+                filteredBatch,
+                filteredBatch.size(),
                 (PreparedStatement ps, Profile p) -> {
-
 
                     ps.setString(1, p.getName());
 
                     ps.setString(2, p.getGender());
 
-                    ps.setDouble(3, p.getGenderProbability());
+                    ps.setDouble(
+                            3,
+                            p.getGenderProbability()
+                    );
 
                     ps.setInt(4, p.getAge());
 
@@ -226,9 +305,14 @@ public class CsvUploadServiceImpl implements CsvUploadService {
 
                     ps.setString(7, p.getCountryName());
 
-                    ps.setDouble(8, p.getCountryProbability());
+                    ps.setDouble(
+                            8,
+                            p.getCountryProbability()
+                    );
                 }
         );
+
+        return filteredBatch.size();
     }
 
     private boolean isBlank(String value) {
