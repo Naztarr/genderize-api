@@ -92,7 +92,7 @@ public class AuthController {
                 .httpOnly(true)
                 .secure(true) // Set to false only for local localhost testing without SSL
                 .path("/")
-                .maxAge(180)
+                .maxAge(1800)
                 .sameSite("none")
                 .build();
 
@@ -100,7 +100,7 @@ public class AuthController {
                 .httpOnly(true)
                 .secure(true)
                 .path("/")
-                .maxAge(300)
+                .maxAge(3000)
                 .sameSite("none")
                 .build();
 
