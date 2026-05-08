@@ -68,11 +68,10 @@ public class GlobalExceptionHandler extends ResponseEntityExceptionHandler {
     @Override
     protected ResponseEntity<Object> handleMethodArgumentNotValid(
             MethodArgumentNotValidException ex, HttpHeaders headers, HttpStatusCode status, WebRequest request) {
-//        return ResponseEntity
-//                .status(HttpStatus.BAD_REQUEST)
-//                .body(new ErrorResponse("Validation failed: missing or invalid fields."));
-        ex.printStackTrace();
-        return ResponseEntity.badRequest().body(ex.getClass().getSimpleName() + " -> " + ex.getMessage());
+        return ResponseEntity
+                .status(HttpStatus.BAD_REQUEST)
+                .body(new ErrorResponse("Validation failed: missing or invalid fields."));
+
     }
 
 
@@ -98,11 +97,13 @@ public class GlobalExceptionHandler extends ResponseEntityExceptionHandler {
     protected ResponseEntity<Object> handleTypeMismatch(TypeMismatchException ex, HttpHeaders headers,
                                                         HttpStatusCode status, WebRequest request) {
 
-        return ResponseEntity
-                .status(HttpStatus.UNPROCESSABLE_ENTITY)
-                .body(new ErrorResponse(
-                        "Invalid parameter type: "
-                ));
+//        return ResponseEntity
+//                .status(HttpStatus.UNPROCESSABLE_ENTITY)
+//                .body(new ErrorResponse(
+//                        "Invalid parameter type: "
+//                ));
+        ex.printStackTrace();
+        return ResponseEntity.badRequest().body(ex.getClass().getSimpleName() + " -> " + ex.getMessage());
     }
 
     @ExceptionHandler(MethodArgumentTypeMismatchException.class)
