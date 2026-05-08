@@ -29,7 +29,7 @@ public class ProfileController {
         return service.createProfile(name);
     }
 
-    @GetMapping("profiles/{id}")
+    @GetMapping("/profiles/{id}")
     public ResponseEntity<ApiResponse> get(@PathVariable UUID id) {
         return service.getProfile(id);
     }
@@ -56,7 +56,7 @@ public class ProfileController {
         return service.getProfiles(request);
     }
 
-    @GetMapping("profiles/search")
+    @GetMapping("/profiles/search")
     public ResponseEntity<ApiResponse> search(
             @RequestParam String q,
             @RequestParam(required = false) Integer page,
@@ -65,7 +65,7 @@ public class ProfileController {
         return service.search(q, page, limit);
     }
 
-    @GetMapping("profiles/export")
+    @GetMapping("/profiles/export")
     public void exportCsv(@ModelAttribute ProfileFilterRequest filter, HttpServletResponse response) throws Exception {
         service.exportCsv(filter, response);
     }
