@@ -70,7 +70,7 @@ public class ProfileController {
         service.exportCsv(filter, response);
     }
 
-    @PostMapping(value = "/upload",
+    @PostMapping(value = "/upload/file",
             consumes = MediaType.MULTIPART_FORM_DATA_VALUE)
     public ResponseEntity<CsvUploadResponse> upload(
             @RequestParam("file") MultipartFile file
