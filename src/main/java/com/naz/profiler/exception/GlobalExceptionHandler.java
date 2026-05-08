@@ -68,9 +68,11 @@ public class GlobalExceptionHandler extends ResponseEntityExceptionHandler {
     @Override
     protected ResponseEntity<Object> handleMethodArgumentNotValid(
             MethodArgumentNotValidException ex, HttpHeaders headers, HttpStatusCode status, WebRequest request) {
-        return ResponseEntity
-                .status(HttpStatus.BAD_REQUEST)
-                .body(new ErrorResponse("Validation failed: missing or invalid fields."));
+//        return ResponseEntity
+//                .status(HttpStatus.BAD_REQUEST)
+//                .body(new ErrorResponse("Validation failed: missing or invalid fields."));
+        ex.printStackTrace();
+        return ResponseEntity.badRequest().body(ex.getClass().getSimpleName() + " -> " + ex.getMessage());
     }
 
 
