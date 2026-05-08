@@ -1,13 +1,12 @@
 package com.naz.profiler.controller;
 
-import com.naz.profiler.dto.ApiResponse;
-import com.naz.profiler.dto.PageProfileResponse;
-import com.naz.profiler.dto.ProfileFilterRequest;
-import com.naz.profiler.dto.ProfileRequest;
+import com.naz.profiler.dto.*;
+import com.naz.profiler.service.CsvUploadService;
 import com.naz.profiler.service.ProfileService;
 import jakarta.servlet.http.HttpServletResponse;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
+import org.springframework.web.multipart.MultipartFile;
 
 import java.util.UUID;
 
@@ -16,10 +15,12 @@ import java.util.UUID;
 @RequestMapping("/api/profiles")
 public class ProfileController {
 
-    public final ProfileService service;
+    private final ProfileService service;
+    private final CsvUploadService csvUploadService;
 
-    public ProfileController(ProfileService service) {
+    public ProfileController(ProfileService service, CsvUploadService csvUploadService) {
         this.service = service;
+        this.csvUploadService = csvUploadService;
     }
 
     @PostMapping
@@ -66,5 +67,15 @@ public class ProfileController {
     @GetMapping("/export")
     public void exportCsv(@ModelAttribute ProfileFilterRequest filter, HttpServletResponse response) throws Exception {
         service.exportCsv(filter, response);
+    }
+
+    @PostMapping("/upload")
+    public ResponseEntity<CsvUploadResponse> upload(
+            @RequestParam("file") MultipartFile file
+    ) throws Exception {
+
+        return ResponseEntity.ok(
+                csvUploadService.upload(file)
+        );
     }
 }

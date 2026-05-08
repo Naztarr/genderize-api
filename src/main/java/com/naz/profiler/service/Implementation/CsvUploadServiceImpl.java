@@ -282,37 +282,101 @@ public class CsvUploadServiceImpl implements CsvUploadService {
             ON CONFLICT (name) DO NOTHING
             """;
 
-        jdbcTemplate.batchUpdate(
-                sql,
-                filteredBatch,
-                filteredBatch.size(),
-                (PreparedStatement ps, Profile p) -> {
+        try {
 
-                    ps.setString(1, p.getName());
+            jdbcTemplate.batchUpdate(
+                    sql,
+                    filteredBatch,
+                    filteredBatch.size(),
+                    (PreparedStatement ps, Profile p) -> {
 
-                    ps.setString(2, p.getGender());
+                        ps.setString(1, p.getName());
 
-                    ps.setDouble(
-                            3,
-                            p.getGenderProbability()
-                    );
+                        ps.setString(2, p.getGender());
 
-                    ps.setInt(4, p.getAge());
+                        ps.setDouble(
+                                3,
+                                p.getGenderProbability()
+                        );
 
-                    ps.setString(5, p.getAgeGroup());
+                        ps.setInt(4, p.getAge());
 
-                    ps.setString(6, p.getCountryId());
+                        ps.setString(5, p.getAgeGroup());
 
-                    ps.setString(7, p.getCountryName());
+                        ps.setString(6, p.getCountryId());
 
-                    ps.setDouble(
-                            8,
-                            p.getCountryProbability()
-                    );
+                        ps.setString(7, p.getCountryName());
+
+                        ps.setDouble(
+                                8,
+                                p.getCountryProbability()
+                        );
+                    }
+            );
+
+            return filteredBatch.size();
+
+        } catch (Exception ex) {
+
+            int successful = 0;
+
+            for (Profile p : filteredBatch) {
+
+                boolean inserted = insertSingle(p);
+
+                if (inserted) {
+
+                    successful++;
+
+                } else {
+
+                    increment(reasons, "db_insert_failure");
                 }
-        );
+            }
 
-        return filteredBatch.size();
+            return successful;
+        }
+    }
+
+    //fallback single insert
+    private boolean insertSingle(Profile p) {
+
+        String sql = """
+        INSERT INTO profiles
+        (
+            name,
+            gender,
+            gender_probability,
+            age,
+            age_group,
+            country_id,
+            country_name,
+            country_probability
+        )
+        VALUES
+        (?, ?, ?, ?, ?, ?, ?, ?)
+        """;
+
+        try {
+
+            jdbcTemplate.update(
+                    sql,
+                    p.getName(),
+                    p.getGender(),
+                    p.getGenderProbability(),
+                    p.getAge(),
+                    p.getAgeGroup(),
+                    p.getCountryId(),
+                    p.getCountryName(),
+                    p.getCountryProbability()
+            );
+
+            return true;
+
+        } catch (Exception ex) {
+
+            return false;
+        }
     }
 
     private boolean isBlank(String value) {
