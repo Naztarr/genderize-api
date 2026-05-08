@@ -4,6 +4,7 @@ import com.naz.profiler.dto.*;
 import com.naz.profiler.service.CsvUploadService;
 import com.naz.profiler.service.ProfileService;
 import jakarta.servlet.http.HttpServletResponse;
+import org.springframework.http.MediaType;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
 import org.springframework.web.multipart.MultipartFile;
@@ -69,7 +70,8 @@ public class ProfileController {
         service.exportCsv(filter, response);
     }
 
-    @PostMapping("/upload")
+    @PostMapping(value = "/upload",
+            consumes = MediaType.MULTIPART_FORM_DATA_VALUE)
     public ResponseEntity<CsvUploadResponse> upload(
             @RequestParam("file") MultipartFile file
     ) throws Exception {
