@@ -58,9 +58,10 @@ public class SecurityConfig {
                 .csrf(csrf -> csrf
                         .csrfTokenRepository(tokenRepository)
                         .csrfTokenRequestHandler(requestHandler)
-                        .ignoringRequestMatchers("/h2-console/**")
-                        // We ignore CSRF for the auth endpoints because they handle the initial login/callback
-                        .ignoringRequestMatchers("/auth/**")
+                        .ignoringRequestMatchers("/h2-console/**",
+                                "/auth/**",
+                                "/api/**"
+                        )
                 )
                 .headers(headers -> headers
                         .frameOptions(frame -> frame.sameOrigin()))
