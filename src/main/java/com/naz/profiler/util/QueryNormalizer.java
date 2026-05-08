@@ -1,7 +1,9 @@
 package com.naz.profiler.util;
 
 import com.naz.profiler.dto.ProfileFilterRequest;
+import org.springframework.stereotype.Component;
 
+@Component
 public class QueryNormalizer {
     public String normalize(ProfileFilterRequest filter) {
 
