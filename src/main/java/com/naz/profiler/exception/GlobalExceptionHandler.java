@@ -107,10 +107,12 @@ public class GlobalExceptionHandler extends ResponseEntityExceptionHandler {
     }
 
     @ExceptionHandler(MethodArgumentTypeMismatchException.class)
-    public ResponseEntity<ApiResponse> handleMethodArgMismatch() {
-        return ResponseEntity
-                .status(HttpStatus.UNPROCESSABLE_ENTITY)
-                .body(new ErrorResponse("Invalid parameter type"));
+    public ResponseEntity<Object> handleMethodArgMismatch(MethodArgumentTypeMismatchException ex) {
+//        return ResponseEntity
+//                .status(HttpStatus.UNPROCESSABLE_ENTITY)
+//                .body(new ErrorResponse("Invalid parameter type"));
+        ex.printStackTrace();
+        return ResponseEntity.badRequest().body(ex.getClass().getSimpleName() + " -> " + ex.getMessage());
     }
 
     @ExceptionHandler(BindException.class)
