@@ -329,6 +329,7 @@ public class CsvUploadServiceImpl implements CsvUploadService {
                     successful++;
 
                 } else {
+                    ex.printStackTrace();
 
                     increment(reasons, "db_insert_failure");
                 }

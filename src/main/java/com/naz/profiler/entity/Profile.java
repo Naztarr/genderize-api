@@ -53,13 +53,28 @@ public class Profile {
     @UuidGenerator(style = UuidGenerator.Style.VERSION_7)
     private UUID id;
 
+    @Column(name = "name")
     private String name;
+
+    @Column(name = "gender")
     private String gender;
+
+    @Column(name = "gender_Probability")
     private Double genderProbability;
+
+    @Column(name = "age")
     private Integer age;
+
+    @Column(name = "age_group")
     private String ageGroup;
+
+    @Column(name = "country_id")
     private String countryId;
+
+    @Column(name = "country_name")
     private String countryName;
+
+    @Column(name = "country_Probability")
     private Double countryProbability;
 
     @CreationTimestamp
