@@ -17,6 +17,7 @@ import org.springframework.web.multipart.MultipartFile;
 import java.io.BufferedReader;
 import java.io.InputStreamReader;
 import java.sql.PreparedStatement;
+import java.sql.Timestamp;
 import java.time.Instant;
 import java.util.*;
 import java.util.stream.Collectors;
@@ -318,7 +319,7 @@ public class CsvUploadServiceImpl implements CsvUploadService {
                                 p.getCountryProbability()
                         );
 
-                        ps.setObject(10, Instant.now());
+                        ps.setTimestamp(10, Timestamp.from(Instant.now()));
                     }
             );
 
