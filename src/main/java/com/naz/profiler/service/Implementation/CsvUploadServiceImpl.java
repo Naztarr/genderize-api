@@ -1,5 +1,6 @@
 package com.naz.profiler.service.Implementation;
 
+import com.github.f4b6a3.uuid.UuidCreator;
 import com.naz.profiler.dto.CsvUploadResponse;
 import com.naz.profiler.entity.Profile;
 import com.naz.profiler.repository.ProfileRepository;
@@ -16,6 +17,7 @@ import org.springframework.web.multipart.MultipartFile;
 import java.io.BufferedReader;
 import java.io.InputStreamReader;
 import java.sql.PreparedStatement;
+import java.time.Instant;
 import java.util.*;
 import java.util.stream.Collectors;
 
@@ -266,21 +268,23 @@ public class CsvUploadServiceImpl implements CsvUploadService {
         }
 
         String sql = """
-            INSERT INTO profiles
-            (
-                name,
-                gender,
-                gender_probability,
-                age,
-                age_group,
-                country_id,
-                country_name,
-                country_probability
-            )
-            VALUES
-            (?, ?, ?, ?, ?, ?, ?, ?)
-            ON CONFLICT (name) DO NOTHING
-            """;
+    INSERT INTO profiles
+    (
+        id,
+        name,
+        gender,
+        gender_probability,
+        age,
+        age_group,
+        country_id,
+        country_name,
+        country_probability,
+        created_at
+    )
+    VALUES
+    (?, ?, ?, ?, ?, ?, ?, ?, ?, ?)
+    ON CONFLICT (name) DO NOTHING
+    """;
 
         try {
 
@@ -290,27 +294,31 @@ public class CsvUploadServiceImpl implements CsvUploadService {
                     filteredBatch.size(),
                     (PreparedStatement ps, Profile p) -> {
 
-                        ps.setString(1, p.getName());
+                        ps.setObject(1, UuidCreator.getTimeOrderedEpoch());
 
-                        ps.setString(2, p.getGender());
+                        ps.setString(2, p.getName());
+
+                        ps.setString(3, p.getGender());
 
                         ps.setDouble(
-                                3,
+                                4,
                                 p.getGenderProbability()
                         );
 
-                        ps.setInt(4, p.getAge());
+                        ps.setInt(5, p.getAge());
 
-                        ps.setString(5, p.getAgeGroup());
+                        ps.setString(6, p.getAgeGroup());
 
-                        ps.setString(6, p.getCountryId());
+                        ps.setString(7, p.getCountryId());
 
-                        ps.setString(7, p.getCountryName());
+                        ps.setString(8, p.getCountryName());
 
                         ps.setDouble(
-                                8,
+                                9,
                                 p.getCountryProbability()
                         );
+
+                        ps.setObject(10, Instant.now());
                     }
             );
 
